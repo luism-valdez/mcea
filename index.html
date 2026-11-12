@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Cloud Engagement Administrator — Exam Simulator</title>
+<script>
+(function() {
+  const HASH = '404e7471ba5112b6ce5892dabe5f07a364254d12906ebf0c5352c554055e2aec';
+  async function sha256(msg) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+  window.__checkPassword = async function() {
+    const input = document.getElementById('pw-input').value;
+    const err = document.getElementById('pw-error');
+    const hash = await sha256(input);
+    if (hash === HASH) {
+      sessionStorage.setItem('mcea_auth', '1');
+      document.getElementById('pw-gate').style.display = 'none';
+      document.getElementById('app-root').style.display = '';
+    } else {
+      err.style.display = 'block';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  };
+  window.__pwKeydown = function(e) {
+    document.getElementById('pw-error').style.display = 'none';
+    if (e.key === 'Enter') window.__checkPassword();
+  };
+  document.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('mcea_auth') === '1') {
+      document.getElementById('pw-gate').style.display = 'none';
+      document.getElementById('app-root').style.display = '';
+    } else {
+      document.getElementById('pw-gate').style.display = 'flex';
+      document.getElementById('app-root').style.display = 'none';
+      setTimeout(() => document.getElementById('pw-input').focus(), 50);
+    }
+  });
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Trailhead Academy / Salesforce product palette */
+    --sf-navy:         #032D60;   /* deep heading navy */
+    --sf-action-blue:  #0176D3;   /* primary action blue */
+    --sf-action-light: #1B96FF;   /* hover blue */
+    --sf-blue-10:      #E8F4FF;   /* very light blue tint */
+    --sf-blue-20:      #D0E8FF;   /* light blue for tags/chips */
+    --sf-white:        #FFFFFF;
+
+    /* Secondary */
+    --sf-teal:    #04E1CB;
+    --sf-yellow:  #FCC003;
+    --sf-pink:    #FF538A;
+    --sf-violet:  #D17DFE;
+
+    /* Surface system */
+    --bg:       #F3F7FB;
+    --surface:  #FFFFFF;
+    --surface2: #EEF4FB;
+    --border:   #D8E8F5;
+
+    /* Semantic aliases */
+    --accent:      var(--sf-action-blue);
+    --accent-dim:  rgba(1,118,211,0.08);
+    --accent-dark: var(--sf-navy);
+
+    /* Status colors */
+    --green:      #2E844A;
+    --green-dim:  rgba(46,132,74,0.10);
+    --red:        #BA0517;
+    --red-dim:    rgba(186,5,23,0.08);
+    --yellow:     #A07400;
+    --yellow-dim: rgba(160,116,0,0.10);
+
+    /* Typography */
+    --text:        #181818;
+    --text-dim:    #444444;
+    --text-dimmer: #747474;
+
+    /* Type families */
+    --font-body:    "Plus Jakarta Sans", "Salesforce Sans", Helvetica, Arial, sans-serif;
+    --font-display: "Montserrat", "Avant Garde for Salesforce", "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+
+    --radius: 12px;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ── HOME ── */
+  #home {
+    align-items: center;
+    padding: 0 20px 48px;
+    gap: 0;
+  }
+  .home-nav {
+    width: 100%;
+    max-width: 680px;
+    padding: 18px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .home-nav-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+  .home-nav-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .home-inner {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .brand-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--sf-action-blue);
+    font-weight: 600;
+    font-family: var(--font-body);
+  }
+  .brand-title {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--sf-navy);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+  .brand-sub {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 52ch;
+    line-height: 1.7;
+  }
+  .stat-bar {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    flex: 1;
+    min-width: 130px;
+    box-shadow: 0 1px 4px rgba(0,30,91,0.07);
+  }
+  .stat-num { font-size: 24px; font-weight: 700; color: var(--sf-action-blue); }
+  .stat-label { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .mode-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .mode-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    box-shadow: 0 1px 4px rgba(0,30,91,0.07);
+  }
+  .mode-card:hover {
+    border-color: var(--sf-action-blue);
+    box-shadow: 0 4px 16px rgba(1,118,211,0.16);
+    transform: translateY(-2px);
+  }
+  .mode-icon { font-size: 28px; }
+  .mode-name { font-size: 18px; font-weight: 700; }
+  .mode-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .mode-card.practice .mode-name { color: var(--sf-action-blue); font-family: var(--font-display); }
+  .mode-card.test .mode-name { color: var(--sf-navy); font-family: var(--font-display); }
+
+  .section-filter {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,30,91,0.07);
+  }
+  .filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.01em;
+  }
+  .section-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    padding: 6px 13px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .pill:hover { border-color: var(--sf-action-blue); color: var(--sf-action-blue); background: var(--sf-blue-10); }
+  .pill.active { border-color: var(--sf-action-blue); background: var(--sf-action-blue); color: #fff; }
+
+  /* ── QUIZ LAYOUT ── */
+  #quiz, #test-screen {
+    padding: 0;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .quiz-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--sf-white);
+    border-bottom: 2px solid var(--sf-action-blue);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(3,45,96,0.10);
+  }
+  .header-left { flex: 1; display: flex; align-items: center; gap: 16px; }
+  .back-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--sf-navy);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
+  .back-btn:hover { background: var(--sf-blue-10); border-color: var(--sf-action-blue); color: var(--sf-action-blue); }
+  .progress-info { font-size: 13px; color: var(--text-dim); }
+  .progress-info strong { color: var(--sf-navy); font-weight: 600; }
+  .progress-bar-wrap {
+    width: 160px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .score-badge {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--sf-blue-10);
+    color: var(--sf-action-blue);
+    min-width: 80px;
+    text-align: center;
+    border: 1px solid var(--sf-blue-20);
+  }
+  .timer-badge {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: var(--sf-blue-10);
+    color: var(--sf-navy);
+    font-variant-numeric: tabular-nums;
+    min-width: 72px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .timer-badge.warning { color: #7A5000; background: #FFF4D4; border-color: #F0C040; }
+  .timer-badge.danger  { color: #BA0517; background: #FFF0F0; border-color: #F7A7A7; }
+
+  /* .quiz-body defined in sidebar section below */
+  .question-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .q-num { font-size: 12px; color: var(--text-dimmer); font-weight: 600; }
+  .section-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: var(--sf-blue-20);
+    color: var(--sf-action-blue);
+    font-weight: 600;
+  }
+  .question-text {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--text);
+    font-weight: 400;
+  }
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.55;
+    transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,30,91,0.05);
+  }
+  .option-btn:not(.revealed):hover {
+    border-color: var(--sf-action-blue);
+    background: var(--sf-blue-10);
+    box-shadow: 0 2px 8px rgba(1,118,211,0.12);
+  }
+  .option-btn.selected {
+    border-color: var(--sf-action-blue);
+    background: var(--sf-blue-10);
+    box-shadow: 0 2px 8px rgba(1,118,211,0.14);
+  }
+  .option-btn.correct {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+  .option-btn.incorrect {
+    border-color: var(--red);
+    background: var(--red-dim);
+  }
+  .opt-letter {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    color: var(--sf-navy);
+  }
+  .option-btn.selected .opt-letter {
+    background: var(--sf-action-blue);
+    border-color: var(--sf-action-blue);
+    color: #fff;
+  }
+  .option-btn.correct .opt-letter {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .option-btn.incorrect .opt-letter {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .opt-text { flex: 1; }
+
+  .feedback-box {
+    display: none;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    border: 1.5px solid;
+    gap: 10px;
+    flex-direction: column;
+  }
+  .feedback-box.show { display: flex; }
+  .feedback-box.correct-fb { border-color: var(--green); background: var(--green-dim); }
+  .feedback-box.incorrect-fb { border-color: var(--red); background: var(--red-dim); }
+  .feedback-result {
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .feedback-result.correct-fb { color: #1a7a45; }
+  .feedback-result.incorrect-fb { color: #a02020; }
+  .feedback-explanation {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .quiz-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 8px;
+  }
+  .quiz-actions-right {
+    display: flex;
+    gap: 12px;
+  }
+  .btn {
+    padding: 11px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: var(--sf-action-blue); color: #fff; box-shadow: 0 2px 6px rgba(1,118,211,0.28); }
+  .btn-primary:hover { background: #005FB2; }
+  .btn-ghost { background: var(--surface); color: var(--sf-navy); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--sf-action-blue); color: var(--sf-action-blue); background: var(--sf-blue-10); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  /* ── RESULTS ── */
+  #results {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg);
+  }
+  .results-inner {
+    max-width: 620px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    align-items: center;
+    text-align: center;
+  }
+  .results-score-ring {
+    width: 140px;
+    height: 140px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .results-score-ring svg { width: 140px; height: 140px; transform: rotate(-90deg); }
+  .results-score-ring .ring-bg { fill: none; stroke: var(--surface2); stroke-width: 10; }
+  .results-score-ring .ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .ring-pct { font-size: 30px; font-weight: 700; font-family: var(--font-display); }
+  .ring-sub { font-size: 11px; color: var(--text-dim); }
+  .results-title { font-size: 26px; font-weight: 700; font-family: var(--font-display); letter-spacing: -0.01em; }
+  .results-sub { font-size: 15px; color: var(--text-dim); max-width: 44ch; line-height: 1.65; }
+  .results-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+  }
+  .r-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,30,91,0.07);
+  }
+  .r-stat-num { font-size: 22px; font-weight: 700; }
+  .r-stat-num.green { color: var(--green); }
+  .r-stat-num.red { color: var(--red); }
+  .r-stat-num.blue { color: var(--sf-action-blue); }
+  .r-stat-label { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+  .section-breakdown {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-align: left;
+    box-shadow: 0 1px 4px rgba(0,30,91,0.07);
+  }
+  .breakdown-header {
+    padding: 14px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sf-navy);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.01em;
+    background: var(--surface2);
+  }
+  .breakdown-row {
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-name { flex: 1; font-size: 13px; color: var(--text-dim); }
+  .breakdown-bar-wrap { width: 100px; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .breakdown-bar { height: 100%; border-radius: 3px; }
+  .breakdown-frac { font-size: 12px; font-weight: 600; color: var(--text); min-width: 42px; text-align: right; }
+
+  .results-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+  /* ── REVIEW ── */
+  #review {
+    flex-direction: column;
+  }
+  .review-body {
+    flex: 1;
+    padding: 32px 24px;
+    max-width: 780px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .review-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 1px 4px rgba(0,30,91,0.06);
+  }
+  .review-card.correct-card { border-left: 3px solid var(--green); }
+  .review-card.incorrect-card { border-left: 3px solid var(--red); }
+  .review-card.skipped-card { border-left: 3px solid var(--yellow); }
+  .review-question { font-size: 15px; line-height: 1.6; color: var(--text); }
+  .review-opt { font-size: 13.5px; padding: 8px 12px; border-radius: 6px; }
+  .review-opt.chosen { background: var(--red-dim); color: #a02020; border-left: 3px solid var(--red); padding-left: 9px; }
+  .review-opt.correct-ans { background: var(--green-dim); color: #1a7a45; border-left: 3px solid var(--green); padding-left: 9px; }
+  .review-opt.plain { color: var(--text-dim); }
+  .review-exp {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+  .review-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .review-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+  .review-badge.correct-badge { background: var(--green-dim); color: var(--green); }
+  .review-badge.incorrect-badge { background: var(--red-dim); color: var(--red); }
+  .review-badge.skipped-badge { background: var(--yellow-dim); color: var(--yellow); }
+
+  /* ── PRACTICE LAYOUT WITH SIDEBAR ── */
+  .quiz-content-wrap {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .q-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-header {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+  .sidebar-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sf-navy);
+  }
+  .sidebar-answered {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+  .sidebar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    padding: 14px 12px;
+    flex: 1;
+    overflow-y: auto;
+    align-content: start;
+  }
+  .q-tile {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.12s, background 0.12s, color 0.12s;
+    position: relative;
+  }
+  .q-tile:hover { border-color: var(--sf-action-blue); color: var(--sf-action-blue); background: var(--sf-blue-10); }
+  .q-tile.current {
+    background: var(--sf-action-blue);
+    border-color: var(--sf-action-blue);
+    color: #fff;
+  }
+  .q-tile.answered-correct {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: #1a7a45;
+  }
+  .q-tile.answered-incorrect {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: #a02020;
+  }
+  .q-tile.skipped {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--text-dimmer);
+  }
+  /* Flagged: amber background for unanswered/skipped; dot indicator for answered */
+  .q-tile.flagged {
+    background: #FFF4E0;
+    border-color: #D4860B;
+    color: #8a5200;
+  }
+  .q-tile.flagged::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #D4860B;
+  }
+  /* When a flagged tile is also answered-correct/incorrect/skipped, keep status color but show dot */
+  .q-tile.answered-correct.flagged {
+    background: var(--green-dim);
+    border-color: #D4860B;
+    color: #1a7a45;
+  }
+  .q-tile.answered-incorrect.flagged {
+    background: var(--red-dim);
+    border-color: #D4860B;
+    color: #a02020;
+  }
+  .q-tile.skipped.flagged {
+    background: var(--surface2);
+    border-color: #D4860B;
+    color: var(--text-dimmer);
+  }
+  .sidebar-legend {
+    padding: 12px 14px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .legend-dot.current   { background: var(--sf-action-blue); }
+  .legend-dot.answered  { background: var(--accent-dim); border: 1.5px solid var(--sf-action-blue); }
+  .legend-dot.correct  { background: var(--green-dim); border: 1.5px solid var(--green); }
+  .legend-dot.incorrect{ background: var(--red-dim); border: 1.5px solid var(--red); }
+  .legend-dot.skipped  { background: var(--surface2); border: 1.5px solid var(--border); }
+  .legend-dot.flagged  { background: #FFF4E0; border: 1.5px solid #D4860B; }
+  .sidebar-submit {
+    padding: 10px 14px 14px;
+    flex-shrink: 0;
+  }
+
+  /* Practice question area (inside sidebar layout) */
+  .quiz-body {
+    flex: 1;
+    padding: 32px 36px;
+    max-width: 760px;
+    margin: 0 auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Test sidebar tile states (answered = solid blue, no correct/incorrect revealed) */
+  .q-tile.test-answered {
+    background: var(--accent-dim);
+    border-color: var(--sf-action-blue);
+    color: var(--sf-action-blue);
+  }
+  .q-tile.test-answered.flagged {
+    background: var(--accent-dim);
+    border-color: #D4860B;
+    color: var(--sf-action-blue);
+  }
+
+  @media (max-width: 800px) {
+    .q-sidebar { width: 180px; }
+    .sidebar-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .mode-cards { grid-template-columns: 1fr; }
+    .results-stats { grid-template-columns: 1fr 1fr; }
+    .quiz-header { flex-wrap: wrap; }
+    .progress-bar-wrap { display: none; }
+    .q-sidebar { display: none; }
+    .quiz-body { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ PASSWORD GATE -->
+<div id="pw-gate" style="display:none;position:fixed;inset:0;z-index:9999;background:#F3F7FB;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;">
+  <div style="background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(3,45,96,0.13);padding:48px 40px;max-width:400px;width:90%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px;">
+    <div style="width:56px;height:56px;background:#E8F4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;">🔒</div>
+    <div>
+      <div style="font-size:22px;font-weight:700;color:#032D60;font-family:'Montserrat',Helvetica,Arial,sans-serif;margin-bottom:8px;">MCEA Exam Simulator</div>
+      <div style="font-size:14px;color:#444;line-height:1.5;">Enter the password to access the simulator.</div>
+    </div>
+    <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
+      <input id="pw-input" type="password" placeholder="Password" onkeydown="__pwKeydown(event)"
+        style="width:100%;padding:12px 16px;border:1.5px solid #D8E8F5;border-radius:8px;font-size:15px;font-family:inherit;color:#181818;outline:none;transition:border-color 0.15s;"
+        onfocus="this.style.borderColor='#0176D3'" onblur="this.style.borderColor='#D8E8F5'">
+      <div id="pw-error" style="display:none;font-size:13px;color:#BA0517;background:#FFF0F0;border:1px solid #F7A7A7;border-radius:6px;padding:8px 12px;">
+        Incorrect password. Please try again.
+      </div>
+      <button onclick="__checkPassword()"
+        style="width:100%;padding:12px;background:#0176D3;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;"
+        onmouseover="this.style.background='#005FB2'" onmouseout="this.style.background='#0176D3'">
+        Unlock
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="app-root" style="display:none;">
+
+<!-- ═══════════════════════════════════════════════════ HOME -->
+<div id="home" class="screen active">
+  <div class="home-nav">
+    <svg width="120" height="28" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Salesforce">
+      <!-- Cloud shape -->
+      <path d="M22.5 11.5C22.5 8.46 20.04 6 17 6C15.88 6 14.83 6.35 13.96 6.93C13.1 4.67 10.93 3 8.38 3C5.13 3 2.5 5.63 2.5 8.88C2.5 9.04 2.51 9.2 2.52 9.36C1.0 10.03 0 11.54 0 13.25C0 15.6 1.9 17.5 4.25 17.5H21.5C23.43 17.5 25 15.93 25 14C25 12.85 24.41 11.85 23.52 11.28C23.17 11.1 22.85 10.98 22.5 11.5Z" fill="#00B3FF"/>
+      <!-- Text: salesforce -->
+      <text x="30" y="17" font-family="'Plus Jakarta Sans', 'Salesforce Sans', Helvetica, sans-serif" font-size="13" font-weight="700" fill="#001E5B" letter-spacing="-0.2">salesforce</text>
+    </svg>
+    <span class="home-nav-divider"></span>
+    <span class="home-nav-label">Certification Prep</span>
+  </div>
+  <div class="home-inner">
+    <div class="brand">
+      <div class="brand-eyebrow">SALESFORCE CERTIFIED · MCEA</div>
+      <div class="brand-title">Marketing Cloud Engagement Administrator</div>
+      <div class="brand-sub">Practice for the Salesforce Certified Marketing Cloud Engagement Administrator exam. 102 questions across 5 exam sections. Exam questions align to the Winter '25 release.</div>
+    </div>
+
+    <div class="stat-bar">
+      <div class="stat"><div class="stat-num">102</div><div class="stat-label">Total questions</div></div>
+      <div class="stat"><div class="stat-num">5</div><div class="stat-label">Exam sections</div></div>
+      <div class="stat"><div class="stat-num" id="best-score-stat">—</div><div class="stat-label">Best test score</div></div>
+    </div>
+
+    <div class="section-filter">
+      <div class="filter-label">Filter by section</div>
+      <div class="section-pills" id="section-pills">
+        <button class="pill active" data-section="all" onclick="selectSection('all')">All sections</button>
+      </div>
+    </div>
+
+    <div class="mode-cards">
+      <div class="mode-card practice" onclick="startMode('practice')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-name">Practice</div>
+        <div class="mode-desc">Answer at your own pace. Get instant feedback and full explanations after each question.</div>
+      </div>
+      <div class="mode-card test" onclick="startMode('test')">
+        <div class="mode-icon">📋</div>
+        <div class="mode-name">Exam Simulation</div>
+        <div class="mode-desc">60 questions · 105 minutes · Passing score 67%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ PRACTICE QUIZ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <div class="header-left">
+      <button class="back-btn" onclick="goHome()">← Home</button>
+      <div class="progress-info">
+        Question <strong id="q-current">1</strong> of <strong id="q-total">—</strong>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+    </div>
+    <div class="score-badge" id="practice-score">0 / 0</div>
+  </div>
+  <div class="quiz-content-wrap">
+    <!-- Left sidebar: question navigator -->
+    <aside class="q-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Questions</div>
+        <div class="sidebar-answered" id="sidebar-answered-count">0 / 0 answered</div>
+      </div>
+      <div class="sidebar-grid" id="sidebar-grid"></div>
+      <div class="sidebar-legend">
+        <div class="legend-row"><span class="legend-dot current"></span>Current</div>
+        <div class="legend-row"><span class="legend-dot correct"></span>Correct</div>
+        <div class="legend-row"><span class="legend-dot incorrect"></span>Incorrect</div>
+        <div class="legend-row"><span class="legend-dot skipped"></span>Skipped</div>
+        <div class="legend-row"><span class="legend-dot flagged"></span>Flagged</div>
+      </div>
+      <div class="sidebar-submit">
+        <button class="btn btn-primary" onclick="showPracticeResults()" style="width:100%">Submit Practice</button>
+      </div>
+    </aside>
+    <!-- Main question area -->
+    <div class="quiz-body">
+      <div class="question-meta">
+        <span class="q-num" id="q-num-label"></span>
+        <span class="section-tag" id="q-section-tag"></span>
+      </div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options-list" id="options-list"></div>
+      <div class="feedback-box" id="feedback-box">
+        <div class="feedback-result" id="feedback-result"></div>
+        <div class="feedback-explanation" id="feedback-exp"></div>
+      </div>
+      <div class="quiz-actions">
+        <button class="btn btn-ghost" id="practice-flag-btn" onclick="flagPracticeQuestion()">🚩 Flag</button>
+        <div class="quiz-actions-right">
+          <button class="btn btn-ghost" id="skip-btn" onclick="skipQuestion()">Skip</button>
+          <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ TEST SCREEN -->
+<div id="test-screen" class="screen">
+  <div class="quiz-header">
+    <div class="header-left">
+      <button class="back-btn" onclick="confirmAbandon()">← Home</button>
+      <div class="progress-info">
+        Question <strong id="tq-current">1</strong> of <strong id="tq-total">60</strong>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="test-progress-bar"></div>
+      </div>
+    </div>
+    <div class="timer-badge" id="timer-display">1:45:00</div>
+  </div>
+  <div class="quiz-content-wrap">
+    <!-- Left sidebar: question navigator -->
+    <aside class="q-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Questions</div>
+        <div class="sidebar-answered" id="test-sidebar-answered-count">0 / 0 answered</div>
+      </div>
+      <div class="sidebar-grid" id="test-sidebar-grid"></div>
+      <div class="sidebar-legend">
+        <div class="legend-row"><span class="legend-dot current"></span>Current</div>
+        <div class="legend-row"><span class="legend-dot answered"></span>Answered</div>
+        <div class="legend-row"><span class="legend-dot skipped"></span>Unanswered</div>
+        <div class="legend-row"><span class="legend-dot flagged"></span>Flagged</div>
+      </div>
+      <div class="sidebar-submit">
+        <button class="btn btn-primary" id="submit-test-sidebar-btn" onclick="submitTest()" style="width:100%">Submit Exam</button>
+      </div>
+    </aside>
+    <!-- Main question area -->
+    <div class="quiz-body">
+      <div class="question-meta">
+        <span class="q-num" id="tq-num-label"></span>
+        <span class="section-tag" id="tq-section-tag"></span>
+      </div>
+      <div class="question-text" id="tq-text"></div>
+      <div class="options-list" id="t-options-list"></div>
+      <div class="quiz-actions">
+        <button class="btn btn-ghost" id="test-flag-btn" onclick="flagQuestion()">🚩 Flag</button>
+        <div class="quiz-actions-right">
+          <button class="btn btn-ghost" onclick="testNav(-1)">← Prev</button>
+          <button class="btn btn-primary" id="test-next-btn" onclick="testNav(1)">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ RESULTS -->
+<div id="results" class="screen">
+  <div class="results-inner">
+    <div class="results-score-ring">
+      <svg viewBox="0 0 140 140">
+        <circle class="ring-bg" cx="70" cy="70" r="60"/>
+        <circle class="ring-fill" id="ring-fill" cx="70" cy="70" r="60"
+          stroke-dasharray="377" stroke-dashoffset="377"/>
+      </svg>
+      <div class="ring-label">
+        <div class="ring-pct" id="ring-pct">0%</div>
+        <div class="ring-sub" id="ring-sub">score</div>
+      </div>
+    </div>
+    <div>
+      <div class="results-title" id="result-title">Exam Complete</div>
+      <div class="results-sub" id="result-sub"></div>
+    </div>
+    <div class="results-stats">
+      <div class="r-stat"><div class="r-stat-num green" id="r-correct">0</div><div class="r-stat-label">Correct</div></div>
+      <div class="r-stat"><div class="r-stat-num red" id="r-incorrect">0</div><div class="r-stat-label">Incorrect</div></div>
+      <div class="r-stat"><div class="r-stat-num blue" id="r-total">0</div><div class="r-stat-label">Answered</div></div>
+    </div>
+    <div class="section-breakdown" id="section-breakdown"></div>
+    <div class="results-actions">
+      <button class="btn btn-ghost" onclick="reviewAnswers()">Review Answers</button>
+      <button class="btn btn-primary" onclick="goHome()">Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ REVIEW -->
+<div id="review" class="screen">
+  <div class="quiz-header">
+    <div class="header-left">
+      <button class="back-btn" onclick="showScreen('results')">← Results</button>
+      <div class="progress-info"><strong>Answer Review</strong></div>
+    </div>
+  </div>
+  <div class="review-body" id="review-body"></div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [{"s":"Part V: Maintenance - 15%","q":"A Marketing Cloud admin is asked to understand how a certain content area within a Triggered Send Email is performing. Which report should be used?","o":[{"letter":"A","text":"Impression Tracking for Triggered Sends"},{"letter":"B","text":"Account Send Summary"},{"letter":"C","text":"Dynamic Content for Triggered Sends"}],"a":"A","e":"Data Extraction and Report"},{"s":"Part V: Maintenance - 15%","q":"A Marketing Cloud admin wants to create a suppression list for hard-bounced email addresses. Where could the details be found?","o":[{"letter":"A","text":"Email Studio Tracking Tab"},{"letter":"B","text":"Bounce Data View"},{"letter":"C","text":"Recent Email Sending Summary"}],"a":"B","e":"Data Extraction and Report"},{"s":"Part V: Maintenance - 15%","q":"NTO Company uses DoubleClick Bid Manager, Facebook Ads, and Google Analytics to manage advertising spend. They want to combine these data sources with Marketing Cloud's API to identify their most effective campaigns. What feature should the Marketing Cloud admin recommend?","o":[{"letter":"A","text":"Interaction Studio"},{"letter":"B","text":"Einstein AI"},{"letter":"C","text":"Datorama"}],"a":"C","e":"Additional Marketing Cloud Products"},{"s":"Part V: Maintenance - 15%","q":"A Marketing Cloud admin has been asked to get the last 30 days Bounce data from their account. What should the Admin use to get granular bounce data in the bulk in a pre-defined format?","o":[{"letter":"A","text":"CSV download of bounce data in My Tracking"},{"letter":"B","text":"Sent Data View Query"},{"letter":"C","text":"Automation Studio Tracking Extract"}],"a":"C","e":"Data Extraction and Report"},{"s":"Part V: Maintenance - 15%","q":"A Marketing Cloud admin has configured a Tracking Extract which includes all subscriber attributes for their global regions. However, the admin notices accented characters in the customers' names appear jumbled in the extracted file. Which setting could solve this issue?","o":[{"letter":"A","text":"Change Column Delimiter to"},{"letter":"| B","text":"Change Format to xml"},{"letter":"C","text":"Change Character Encoding to UTF-8"}],"a":"C","e":""},{"s":"Part V: Maintenance - 15%","q":"A Marketing Cloud admin has scheduled a query on a daily basis. They notice the query sometimes fails to execute. How would the admin ensure a notification is received when the query fails?","o":[{"letter":"A","text":"Configure the \"Event Notification Service\" in Setup with their Email Address"},{"letter":"B","text":"Verify their Email Address in Alert Manager within the Setup app"},{"letter":"C","text":"Add their Email Address in the automation notification settings"}],"a":"C","e":"Data Extraction and Report"},{"s":"Part V: Maintenance - 15%","q":"Einstein Recommendations uses data extensions to store user-facing information. How is this data passed to Marketing Cloud?","o":[{"letter":"A","text":"Collect Tracking Code"},{"letter":"B","text":"Google Analytics"},{"letter":"C","text":"Web & Mobile Analytics"}],"a":"A","e":"Additional Products - Einstein Recommendation"},{"s":"Part V: Maintenance - 15%","q":"A Marketing Cloud admin is asked to determine the total number of emails sent across all of their business units in the last calendar year. Where would the admin retrieve this information?","o":[{"letter":"A","text":"Analytics Builder > Reports > Email Send Report"},{"letter":"B","text":"Email Studio > Email > Tracking > Sends"},{"letter":"C","text":"Einstein > Einstein Messaging Insights > Reporting"}],"a":"A","e":"Data Extraction and Report"},{"s":"Part V: Maintenance - 15%","q":"NTO wants to set up their Send Log data extension. Which consideration should be made for long term success?","o":[{"letter":"A","text":"Apply an appropriately-scoped Data Retention period"},{"letter":"B","text":"Set the period to a fixed date in the Data Retention Policy"},{"letter":"C","text":"Log any variable data captured in emails at send time"}],"a":"A","e":""},{"s":"Part V: Maintenance - 15%","q":"A marketing manager requests to receive an email, once a week, with high-level metrics in a standardized format. Specifically, the manager wants to know how many emails were sent in the last week. What location and activity would allow the Marketing Cloud admin to complete this request?","o":[{"letter":"A","text":"Automation Studio: Create a Query Activity to query data from the \"Sent\" Data View, then use an Email activity to automate the sending of the data."},{"letter":"B","text":"Analytics Builder: Select the \"Account Send Summary\" in Reports and schedule a weekly report to be sent."},{"letter":"C","text":"Email Studio: Select the \"Account Send Summary\" in Tracking Reports and schedule a weekly report to be sent."}],"a":"C","e":"Data Extraction and Report"},{"s":"Part V: Maintenance - 15%","q":"NTO wants to drive additional online sales. They are interested in using Einstein to recommend similar items to customers during the checkout process. Which item would they add to their website to accomplish this?","o":[{"letter":"A","text":"Web Collect"},{"letter":"B","text":"Recommendation Code"},{"letter":"C","text":"Conversion/Cart Code"}],"a":"B","e":"Additional Products - Einstein Recommendation"},{"s":"Part IV: Channel Management - 16%","q":"The Marketing Cloud admin for NTO Company wants to build an audience with Advertising Studio which mimics the traits of their most valuable customers. Which network(s) support lookalike audiences directly from Advertising Studio?","o":[{"letter":"A","text":"Google"},{"letter":"B","text":"Facebook"},{"letter":"C","text":"Twitter"}],"a":"B","e":"Advertising Studio"},{"s":"Part IV: Channel Management - 16%","q":"NTO Company is building a journey which randomly sends five different versions of an initial welcome email to new subscriber; however, subscribers receive the same follow-up email two weeks later. To improve maintainability of their email content, NTO want to use five completely different emails, rather than having one email with dynamic content. Which activity would allow them to build the journey with the fewest activities possible?","o":[{"letter":"A","text":"Path Optimizer Activity"},{"letter":"B","text":"Join Activity"},{"letter":"C","text":"Engagement Split"}],"a":"B","e":""},{"s":"Part IV: Channel Management - 16%","q":"NTO uses data extensions for all of their email audiences. A customer reports they updated their email address weeks ago, but continue to receive NTO Daily Digest at their old address. NTO's Marketing cloud Admin has confirmed the new email address is present in the appropriate data extension. What consideration could account for this behavior?","o":[{"letter":"A","text":"The email address in All Subscribers is prioritized."},{"letter":"B","text":"The data extension was not configured as sendable."},{"letter":"C","text":"Contact Builder was not configured properly."}],"a":"A","e":""},{"s":"Part IV: Channel Management - 16%","q":"NTO wants to copy journeys across business units. What could be used to replicate journey structure so it can be easily recreated in another account?","o":[{"letter":"A","text":"Package Manager"},{"letter":"B","text":"Journey Extracts"},{"letter":"C","text":"Journey Templates"}],"a":"A","e":""},{"s":"Part IV: Channel Management - 16%","q":"What are entry source types for Journey Builder?","o":[{"letter":"A","text":"Data Extension, CloudPages, Email List, API Event"},{"letter":"B","text":"Data Extension, Audience Studio, API Event, Date Based Event"},{"letter":"C","text":"Data Extension, Email List, API Event, Date Based Event"}],"a":"B","e":"Journey Builder"},{"s":"Part IV: Channel Management - 16%","q":"A Marketing Cloud admin wants to configure a new keyword for an upcoming SMS campaign. After entering the desired keyword CELEBRATE the admin notices the keyword is unavailable. What issue could the admin be facing?","o":[{"letter":"A","text":"Keyword is used within another business unit"},{"letter":"B","text":"Keyword fails to meet content standards"},{"letter":"C","text":"Keyword is a reserved word"}],"a":"A","e":"Mobile Studio - MobileConnect"},{"s":"Part IV: Channel Management - 16%","q":"A Marketing Cloud admin discovers large sends are not meeting send speed goals set by the organization. What functionality would get messages out the door faster?","o":[{"letter":"A","text":"Send Throttling"},{"letter":"B","text":"Journey Builder"},{"letter":"C","text":"Burst Sending"}],"a":"C","e":"Email Studio"},{"s":"Part IV: Channel Management - 16%","q":"NTO Company has imported a file into All Subscribers. They then received a results file stating admin@example.com could NOT be imported. Which error code would the file contain for this record?","o":[{"letter":"A","text":"List Detective"},{"letter":"B","text":"Skipped Records"},{"letter":"C","text":"Restricted Values"}],"a":"A","e":"Email Studio"},{"s":"Part IV: Channel Management - 16%","q":"Which statement should be considered before using Goals in Journey Builder?","o":[{"letter":"A","text":"Contacts are evaluated against the goal after each wait activity."},{"letter":"B","text":"Goal target statistics are stored in a data extension."},{"letter":"C","text":"Each contact can be assigned an individual goal."}],"a":"A","e":""},{"s":"Part IV: Channel Management - 16%","q":"A Marketing Cloud admin wants to ensure email sends exclude their testing prefix of [PREVIEW] in the subject line when deploying from Email Studio. What should the admin do to prevent the prefix from deploying in live sends?","o":[{"letter":"A","text":"Wrap the subject line with AMPscript"},{"letter":"B","text":"Use Proof instead of [PREVIEW]"},{"letter":"C","text":"Add [PREVIEW] to the subject line validation list"}],"a":"C","e":"Email Studio"},{"s":"Part IV: Channel Management - 16%","q":"A NTO Company's subscriber clicks a link in an NTO Company email. Prior to clicking, the subscriber had a bounced status in Marketing Cloud. What are the effects of the click to the subscriber's status?","o":[{"letter":"A","text":"Status is changed to Active and the bounce count is set to zero"},{"letter":"B","text":"Status remains as Bounced the bounce count is unchanged"},{"letter":"C","text":"Status is changed to Held for 72 hours and the bounce count is set to zero"}],"a":"A","e":"Email Studio"},{"s":"Part IV: Channel Management - 16%","q":"Which activity should be used for multivariate content testing within Journey Builder?","o":[{"letter":"A","text":"Engagement Split"},{"letter":"B","text":"Random Split"},{"letter":"C","text":"Decision Split"}],"a":"B","e":""},{"s":"Part IV: Channel Management - 16%","q":"NTO Company rolled out a global SMS initiative three months ago, as their customers have shown great interest in receiving promotions via text. However, NTO Company was notified they are already at 75% utilization for their annual Super Messages. Why could this be the case?","o":[{"letter":"A","text":"A multiplier is applied to each SMS message based on the destination country."},{"letter":"B","text":"MobilePush was enabled by mistake, which consumes Super Messages when not in use."},{"letter":"C","text":"Each email consumes five Super Messages when sending below a certain threshold."}],"a":"A","e":"Mobile Studio - Super Message"},{"s":"Part IV: Channel Management - 16%","q":"A Marketing Cloud admin is configuring a journey using Path Optimizer. They want to hold back 60% of the contacts until a winner has been selected. What is required to configure the Holdback percentage?","o":[{"letter":"A","text":"No more than two paths"},{"letter":"B","text":"Run Once schedule type"},{"letter":"C","text":"Evaluation period must be 72 hours"}],"a":"B","e":"Journey Builder"},{"s":"Part IV: Channel Management - 16%","q":"A Marketing Cloud admin is configuring Social Studio to manage NTO Company's social media accounts. What prerequisite for configuring Social Studio should the admin consider?","o":[{"letter":"A","text":"Facebook ad manager"},{"letter":"B","text":"Google URL shortner"},{"letter":"C","text":"Bitly URL Shortener"}],"a":"C","e":""},{"s":"Part IV: Channel Management - 16%","q":"A Marketing Cloud admin wants to automatically unsubscribe customers who respond to marketing emails asking to be removed from the mailing list. Which step should the admin take to enable this functionality?","o":[{"letter":"A","text":"Require Forwarding of Out of Office replies."},{"letter":"B","text":"Select Unsubscribe Manual Requests in Reply Mail Management."},{"letter":"C","text":"Ensure a Custom Response is enabled for Automated Response in Reply Mail Management."}],"a":"C","e":""},{"s":"Part IV: Channel Management - 16%","q":"NTO wants to use complex criteria to identify subscribers for a special promotional email. Especially they want to target subscribers who opened or engaged with an email within the last 30 days and live within 10 miles of an NTO store. What should NTO do to create this audience?","o":[{"letter":"A","text":"Data Filters"},{"letter":"B","text":"SQL Queries"},{"letter":"C","text":"Measures"}],"a":"C","e":""},{"s":"Part IV: Channel Management - 16%","q":"A Marketing Cloud admin notices out of the last several sends, Send Log data for a recent A/B test send was NOT recorded. How could the admin ensure send data is recorded?","o":[{"letter":"A","text":"Send Logging is available for A/B tests"},{"letter":"B","text":"Send Logging is enabled for the send"},{"letter":"C","text":"Correct Send Log template is selected"}],"a":"B","e":"Email Studio"},{"s":"Part III: Setup - 38%","q":"NTO Company requires all subscriber files placed on the SFTP for import be encrypted. Which activity in Automation Studio could be used to decrypt the file to prepare for importing?","o":[{"letter":"A","text":"Decryption Activity"},{"letter":"B","text":"Data Extract Activity"},{"letter":"C","text":"File Transfer Activity"}],"a":"C","e":"Integration - File integration (FTP)"},{"s":"Part III: Setup - 38%","q":"NTO Company wants to have specific permission restrictions applied to all users in a business unit. How should they accomplish this?","o":[{"letter":"A","text":"Set default permissions with the restrictions the business unit."},{"letter":"B","text":"Assign a role to the business unit."},{"letter":"C","text":"Deny the permissions directly within the business unit."}],"a":"B","e":"Manage Users and Roles"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin is asked by the marketing team to ensure a default Header and Footer be added to emails. Where under Setup could this be created?","o":[{"letter":"A","text":"Account Settings"},{"letter":"B","text":"Content Builder Settings"},{"letter":"C","text":"Emails Studio Settings"}],"a":"A","e":"Account Settings"},{"s":"Part III: Setup - 38%","q":"NTO Company wants to segment audiences based on Sales Cloud data. Where would their Marketing Cloud admin configure Sales Cloud Objects to be synced and leveraged in Marketing Cloud?","o":[{"letter":"A","text":"Setup >Data Management > Synchronized Data Extensions"},{"letter":"B","text":"Contact Builder > Data Extensions > Synchronized Data Extensions"},{"letter":"C","text":"Contact Builder > Data Sources"}],"a":"C","e":"CRM Integration"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin has been asked to update their Marketing Cloud SFTP password. Where in Setup could they accomplish this task?","o":[{"letter":"A","text":"Data Management"},{"letter":"B","text":"Security"},{"letter":"C","text":"Users"}],"a":"A","e":"Integration - File integration (FTP)"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin has been asked to include Sales Cloud data in their queries. Which feature would allow this functionality?","o":[{"letter":"A","text":"Synchronized Data Sources"},{"letter":"B","text":"Query Studio"},{"letter":"C","text":"Journey Builder"}],"a":"A","e":"Marketing Cloud Connect"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin wants to create an SFTP User for the first time. Which consideration should be taken when configuring an SFTP User?","o":[{"letter":"A","text":"By default, the username is the MID for the current Marketing Cloud MID."},{"letter":"B","text":"Once created, the user will need to be activated to use the SFTP."},{"letter":"C","text":"Once created, the password can only be updated by that admin."}],"a":"A","e":"Integration - File integration (FTP)"},{"s":"Part III: Setup - 38%","q":"A user asks a Marketing Cloud admin to update and increase their session timeout setting. Which consideration should the admin review before making this update?","o":[{"letter":"A","text":"Frustration of users upon timeouts"},{"letter":"B","text":"Change impacts all users"},{"letter":"C","text":"Typical length of time users spend in Marketing Cloud"}],"a":"B","e":""},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin at NTO Company is exploring whether they need to separate their brands into separate business units. When should the admin create separate business units for each of NTO's brands?","o":[{"letter":"A","text":"A new sender profile is needed for sending transactional emails."},{"letter":"B","text":"Brand-specific private domains are required for images and links."},{"letter":"C","text":"Multiple FTP users must be accommodated."}],"a":"B","e":"Manage BU and Users"},{"s":"Part III: Setup - 38%","q":"What does Marketing Cloud authenticate when a user logs in through the user interface?","o":[{"letter":"A","text":"If the user is assigned a role in the parent business unit"},{"letter":"B","text":"If the user is logging in within defined Business Hours"},{"letter":"C","text":"If the user is logging in from a allowlisted IP address"}],"a":"C","e":""},{"s":"Part III: Setup - 38%","q":"Security and Legal teams determine subscriber data available to EMEA teams should NOT be available to AMER teams. How could the Marketing Cloud admin ensure distinct data integrity across the regions?","o":[{"letter":"A","text":"Filter data view permissions at the subscriber level"},{"letter":"B","text":"Deploy Multi-Org with a single Marketing Cloud Account"},{"letter":"C","text":"Separate regions into business units and apply Subscriber Filters"}],"a":"C","e":"Security Settings"},{"s":"Part III: Setup - 38%","q":"NTO Company's security team has password policies they want enforced within Marketing Cloud. Which policies could the Marketing Cloud admin configure in Setup?","o":[{"letter":"A","text":"Maximum Password Length, Password Complexity, Unique Password, Expiration Period"},{"letter":"B","text":"Minimum Password Length, Use Strong Passphrases, Password History, Number of Security Questions"},{"letter":"C","text":"Minimum Password Length, Password Complexity, Password History, Expiration Period"}],"a":"C","e":"Security Settings"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin has been asked to grant full administrator permissions to a new user. Which two standard roles should be selected for the new user?","o":[{"letter":"A","text":"Administrator and Marketing Cloud Administrator"},{"letter":"B","text":"Data Manager and Marketing Cloud Administrator"},{"letter":"C","text":"Marketing Cloud Security Administrator and Data Manager"}],"a":"A","e":"Manage Users and Roles"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin has noticed a File Drop Automation has been failing on the Import File activity. The automation is configured with a filename pattern, so the filename is expected to begin with customer_import_. The import is configured to look for a file named customer_ import_%%Year%%%%Month%%%%Day%%.csv, however, the admin notices the filenames include seconds and milliseconds. How should the admin fix the issue?","o":[{"letter":"A","text":"Use %%FILENAME_FROM_TRIGGER%% in the Import File Activity"},{"letter":"B","text":"Use %%_DataSourceName%% in the Import File Activity"},{"letter":"C","text":"Use the exact filename used for the trigger in the Import File Activity"}],"a":"A","e":"Integration - File integration (FTP)"},{"s":"Part III: Setup - 38%","q":"Where would a Marketing Cloud admin view all verified email addresses?","o":[{"letter":"A","text":"Sender Profiles"},{"letter":"B","text":"Identity Verification Log"},{"letter":"C","text":"From Address Management"}],"a":"C","e":"Setup - From Address Management"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin is asked to add a set of four query string automatically to all the links in an email sent via email studio. Which solution should the admin suggest?","o":[{"letter":"A","text":"Parameter Manager"},{"letter":"B","text":"AMPscript for Marketing Cloud"},{"letter":"C","text":"Google Analytics 360"}],"a":"A","e":"Setup - Email Settings"},{"s":"Part III: Setup - 38%","q":"NTO uses Marketing Cloud Connect to leverage Sales Cloud data in their journeys. A user recently reported the data coming from Sales Cloud is NOT up to date. Where should the Marketing Cloud admin begin troubleshooting?","o":[{"letter":"A","text":"Setup > Synchronized Data Extensions"},{"letter":"B","text":"Contact Builder > Data Sources"},{"letter":"C","text":"Contact Builder > Synchronized Data Extensions"}],"a":"B","e":"CRM Integration"},{"s":"Part III: Setup - 38%","q":"NTO Company wants to leverage the REST API for an external application they plan to build. Where should their Marketing Cloud admin set up permissions to allow REST authentication?","o":[{"letter":"A","text":"Installed Packages"},{"letter":"B","text":"Data Management"},{"letter":"C","text":"Salesforce Integration"}],"a":"A","e":"Integration - API Integration"},{"s":"Part III: Setup - 38%","q":"NTO wants a business analyst to import contact lists. The analyst has the following Marketing Cloud roles: Marketing Cloud Channel Manager, Marketing Cloud Viewer. The analyst logged in but is unable to import contact lists. How should the user be updated to allow the analyst the appropriate access?","o":[{"letter":"A","text":"Remove Marketing Cloud Viewer"},{"letter":"B","text":"Add Distributed Sending User"},{"letter":"C","text":"Add Marketing Cloud Security Administrator"}],"a":"A","e":"Manage Users and Roles"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin notices Individual Email Results are NOT being pushed back into Sales Cloud for a particular end. The admin of Marketing Cloud Connect is functioning properly. What should the admin confirm about the data extension?","o":[{"letter":"A","text":"The data extension is located in the Salesforce Data Extensions folder."},{"letter":"B","text":"The send relationship links SubscriberKey to Subscribers on EmailAddress"},{"letter":"C","text":"The data extension is located in the Synchronized Data Extensions folder."}],"a":"A","e":""},{"s":"Part III: Setup - 38%","q":"NTO uses Parameter Manager to automatically tag links. They want to include a Campaign identifier to the links within a specific campaign message. At which level should the utm_campaign value be configured?","o":[{"letter":"A","text":"Account"},{"letter":"B","text":"Email"},{"letter":"C","text":"Link"}],"a":"C","e":""},{"s":"Part III: Setup - 38%","q":"NTO Company runs a nightly automation consisting of a File Transfer and a File Import. Following an update from the engineering team, the automation began failing. The Marketing Cloud admin suspects the CSV file now has an invalid format. How could the admin receive a file of the bad data rows to confirm this theory?","o":[{"letter":"A","text":"Update the import definition to incude a notification email address"},{"letter":"B","text":"Move the Import definition to its own automation and include a notification email address"},{"letter":"C","text":"Move the File Transfer to its own automation and include a notification email address"}],"a":"A","e":""},{"s":"Part III: Setup - 38%","q":"NTO is a global brand which includes many subsidiary brands under the parent umbrella. NTO is the Enterprise business unit and also has a child business unit used for sending promotional email. How should the rest of the business units be organized?","o":[{"letter":"A","text":"Create a single child business unit for the other brands to share and standardized naming conventions."},{"letter":"B","text":"Create child business units for each brand and nest another level of child business units for GEOs."},{"letter":"C","text":"Create new Enterprise business units for each brand and child business units for each of the brand's GEOs."}],"a":"A","e":""},{"s":"Part III: Setup - 38%","q":"NTO Company was given a set of requirements from their governance team to protect against misuse of customer data. One item mandated Marketing Cloud users should NOT be able to export data without approval from the governance team, however, users should still be able to view data within the system. Which feature would allow compliance with this requirement?","o":[{"letter":"A","text":"Export Email Allowlist"},{"letter":"B","text":"IP Allowlist"},{"letter":"C","text":"Audit Trail"}],"a":"A","e":""},{"s":"Part III: Setup - 38%","q":"NTO Company just purchased Marketing Cloud. Which task would the Marketing Cloud admin be guided through in Setup Assistant?","o":[{"letter":"A","text":"Building the data structure used to store audience information"},{"letter":"B","text":"Importing data into contacts using the Data Loader"},{"letter":"C","text":"Creating a SMS message and sending a mobile campaign"}],"a":"A","e":"Setup Assistant"},{"s":"Part III: Setup - 38%","q":"NTO only has enough licenses for their staff. A campaign manager is out on parental leave. How should NTO create a new user to fill in?","o":[{"letter":"A","text":"Clone the campaign manager's user to a new user"},{"letter":"B","text":"Disable the campaign manager's user and create a new user"},{"letter":"C","text":"Deactivate the campaign manager's license and assign it to the new user"}],"a":"B","e":"Manage Users and Roles"},{"s":"Part III: Setup - 38%","q":"A user asks a Marketing Cloud admin to review their permissions since they are unable to send an email. The admin reviews the user account and notices the user has three roles assigned: Content Creator, Data Manager, and Marketing Cloud Viewer. What should the admin do to resolve the issue so the user can send an email?","o":[{"letter":"A","text":"Remove the Marketing Cloud Viewer Role"},{"letter":"B","text":"Add the Marketing Cloud Administrator role"},{"letter":"C","text":"Edit permissions and Grant permissions to Send"}],"a":"C","e":"Manage Users and Roles"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin is tasked with requesting Marketing Cloud Connect Multi-Org enablement. What consideration should be given to the preference/profile centers for this integration?","o":[{"letter":"A","text":"Profile/Preference centers are automatically created for each business unit connected through Multi-org"},{"letter":"B","text":"Multi-org does not support the standard profile/preference center for the business units."},{"letter":"C","text":"Branding for each business units' profile centers will be inherited from the default business unit setup."}],"a":"B","e":"Marketing Cloud Connect"},{"s":"Part III: Setup - 38%","q":"NTO wants to decrease its Session Timeout from 8 hours to 20 minutes. Where should this update be made?","o":[{"letter":"A","text":"Setup > Platform Tools > Feature Settings"},{"letter":"B","text":"Setup > Company Settings > Account Settings"},{"letter":"C","text":"Setup > Security > Security Settings"}],"a":"C","e":""},{"s":"Part III: Setup - 38%","q":"NTO Company wants to expand their use of Marketing Cloud to business users who spend their day in Sales Cloud, without granting access to Marketing Cloud directly. What additional feature should be used?","o":[{"letter":"A","text":"Distributed Sending"},{"letter":"B","text":"Marketing Cloud Connect"},{"letter":"C","text":"Distributed Marketing"}],"a":"B","e":"Marketing Cloud Connect"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin is setting up NTO Company's newest business units and several users to assign to the new business units. How would the admin assign users to the business units?","o":[{"letter":"A","text":"Search for the invidal user, select their name, and click Manage Business Units."},{"letter":"B","text":"Search for the indvidal user, select their name, and click Edit Business Units."},{"letter":"C","text":"Give Permissions to users at the top-level account to assign their own business units."}],"a":"A","e":"Manage BU and Users"},{"s":"Part III: Setup - 38%","q":"NTO Company is concerned about unauthorized API access to their Marketing Cloud account. Which feature would they enable to assist in reducing threats from malicious API attacks?","o":[{"letter":"A","text":"Multi-Factor Authentication"},{"letter":"B","text":"IP Login Allowlist"},{"letter":"C","text":"SSH Key Management"}],"a":"B","e":""},{"s":"Part III: Setup - 38%","q":"While setting up Marketing Cloud Connect, a Marketing Cloud admin navigates to the Marketing Cloud tab in Sales Cloud to complete the integration. The admin then receives the following error message: Insufficient User Permissions. You have not been designated as an integrated Marketing Cloud user. Contact your system administrator. The admin notices the Marketing Cloud for AppExchange Admin option is selected when looking at the user settings. What action should correct the issue?","o":[{"letter":"A","text":"Apply the appropriate user mappings in the CRM configuration"},{"letter":"B","text":"Apply the Marketing Cloud for AppExchange User option as well"},{"letter":"C","text":"Apply the Connected App Authentication permission"}],"a":"B","e":"Marketing Cloud Connect"},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin wants to ensure no one could access the API with their Marketing Cloud user credentials. Which security setting would control this behavior?","o":[{"letter":"A","text":"Deselect 'Enable Username and Password for Web Services'"},{"letter":"B","text":"Select 'Identity Verification'"},{"letter":"C","text":"Enable MFA on Users accounts"}],"a":"A","e":"Security Settings"},{"s":"Part III: Setup - 38%","q":"Setup Assistant provides information and resources for configuring a new Marketing Cloud account. Which topic does Setup Assistant cover?","o":[{"letter":"A","text":"Implementing Journey Builder"},{"letter":"B","text":"Configuring the Data Structure"},{"letter":"C","text":"Enabling MobileConnect"}],"a":"B","e":"Setup Assistant"},{"s":"Part III: Setup - 38%","q":"Which product enables a Marketing Cloud admin to observe customer behavior, build preference profiles, and deliver the next-best content?","o":[{"letter":"A","text":"Einstein Email Recommendations"},{"letter":"B","text":"Einstein Content Selection"},{"letter":"C","text":"Interactive Email Form Block"}],"a":"A","e":""},{"s":"Part III: Setup - 38%","q":"A new employee is hired into the role of marketing analyst. This user should have access to all tracking data in Marketing Cloud, but no access to any send activities. Which two default User Roles should be applied to this new user which provide this access to all channels, keeping the principle of least privilege in mind?","o":[{"letter":"A","text":"Analyst and Marketing Cloud Viewer"},{"letter":"B","text":"Data Manager and Analyst"},{"letter":"C","text":"Content Creator and Marketing Cloud Viewer"}],"a":"A","e":""},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin wants to append an Urchin Tracking Module (UTM) variable string to links in all emails. What functionality would allow this?","o":[{"letter":"A","text":"Google Analytics"},{"letter":"B","text":"Web and Mobile Analytics"},{"letter":"C","text":"Parameter Manager"}],"a":"C","e":""},{"s":"Part III: Setup - 38%","q":"NTO wants to limit who can receive Marketing Cloud tracking data via email from their Account to any email associated with their domain (ntoretail.com). Which steps should be taken to implement this?","o":[{"letter":"A","text":"Limit export permisions"},{"letter":"B","text":"Add a Domain to the Export Email Whitelist"},{"letter":"C","text":"Enable IP Whitelisting"}],"a":"B","e":""},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin wants to sync Contacts from Sales Cloud, but is concerned about the number of Contacts since not all Contacts will be sent an email. What should the admin do to ensure only specific Contacts are synced?","o":[{"letter":"A","text":"Filter existing records in All Subscribers"},{"letter":"B","text":"Filter records on a Boolean field"},{"letter":"C","text":"Filter records on a picklist value"}],"a":"B","e":""},{"s":"Part III: Setup - 38%","q":"A Marketing Cloud admin wants to check the status of a Salesforce contact in All Subscribers. The account is connected to their Salesforce org via Marketing Cloud Connect. Which subscriber key should be used to search for the contact in All Subscribers?","o":[{"letter":"A","text":"15-digit Contact ID"},{"letter":"B","text":"Email Address"},{"letter":"C","text":"18-digit Contact ID"}],"a":"C","e":"Marketing Cloud Connect"},{"s":"Part III: Setup - 38%","q":"NTO wants to pass the email address of a subscriber to a landing page through a URL parameter from a promotional email. Which Marketing Cloud capability allows for secure transmission of the email address?","o":[{"letter":"A","text":"CloudPagesURL AMPscript function"},{"letter":"B","text":"Web Analytics Connector"},{"letter":"C","text":"Link Wrapping"}],"a":"A","e":""},{"s":"Part III: Setup - 38%","q":"NTO Company placed an encrypted file on their Marketing Cloud SFTP for import into a data extension. They are using a file transfer Activity to decrypt the file. Where would the decrypted data be after the File Transfer Activity completes?","o":[{"letter":"A","text":"Export SFTP folder"},{"letter":"B","text":"Selected SFTP folder"},{"letter":"C","text":"Safehouse"}],"a":"B","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"A Marketing Cloud admin is configuring the Marketing Cloud data model for the first time. Journey Builder will be used to personalize the type of messages being sent to customers, based on if there has been an order or not. There are two existing data extensions: Customers and Orders. -Customers contains information about subscribers including Email Address, First Name, Last Name, Address and Customer ID. -Orders contains information about the orders and includes the unique identifier of the customer. How should Data Designer be configured to allow this data to be used within a Journey decision split?","o":[{"letter":"A","text":"Link the Customers data extension to the data model using Email Address"},{"letter":"B","text":"Link the Customers data extension to the data model using a Many-to-One relationship."},{"letter":"C","text":"Link the Customers data extension to the data model using Customer ID"}],"a":"C","e":"Data Model"},{"s":"Part II: Subscriber Data Management - 18%","q":"NTO Company wants to use Synchronized Data Sources to sync Contact data from Salesforce CRM. However, they only want to sync records they would be able to send to reducing the amount of data being brought over. Which filtering option could be used when configuring the Contact synced object?","o":[{"letter":"A","text":"Select all records which are active in All Subscribers"},{"letter":"B","text":"Select all records where HasOptedOutofEmail is FALSE"},{"letter":"C","text":"Select all records where EmailOptInStatus is 'ACTIVE'"}],"a":"A","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"NTO Company keeps their subscribers in sync with their external database via the import of a CSV which is dropped to the Marketing Cloud SFTP each day. However, NTO has realized the number of subscribers being sent emails is considerably lower than the number they were expecting based on records in their database. Which feature would allow NTO to monitor whether all records were added to the target data structure each day?","o":[{"letter":"A","text":"Run Completion within the File Drop Automation"},{"letter":"B","text":"Runtime Error within the File Drop Automation"},{"letter":"C","text":"Notification Settings within the Import File Activity"}],"a":"C","e":"Integration - File integration (FTP)"},{"s":"Part II: Subscriber Data Management - 18%","q":"A Marketing Cloud admin runs the Contacts Counts report and sees there are currently 500,000 contacts in their account. They have a total of 300,000 email subscriber, 200,000 syncronized contacts, and 75,000 mobile subscribers. Why would the total contact count less than the total number of contacts from all data source?","o":[{"letter":"A","text":"There are overlapping contacts in each of the channels"},{"letter":"B","text":"Synchronized contacts are only counted after sending"},{"letter":"C","text":"Mobile subscribers are not counted as contacts"}],"a":"A","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"NTO Company wants to add new data extensions containing customer purchases to their Marketing Cloud account. Which value should link these new data extensions in Data Designer to the existing contact records?","o":[{"letter":"A","text":"Primary Key"},{"letter":"B","text":"SubscriberID"},{"letter":"C","text":"Unique contact identifier"}],"a":"A","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"A Marketing Cloud admin is tasked with overhauling the data model for Enterprise. While the current data model is isolated to the email channel and there are plans to expand to both SMS and Push channels in the near future. Which data preparation should be made to retain high data quality in the new model?","o":[{"letter":"A","text":"Ensure every data source has a sendable field."},{"letter":"B","text":"Identify and assign appropriate keys to tie records together."},{"letter":"C","text":"Confirm all available data is included."}],"a":"B","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"NTO has Marketing Cloud users who need data extension view and update permissions for campaigns related to B2C sales, but not any permissions for campaigns related to B2B sales. How should they accomplish this?","o":[{"letter":"A","text":"Create a new business unit."},{"letter":"B","text":"Update data extension object level permissions."},{"letter":"C","text":"Create separate folders and add permissions."}],"a":"B","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"NTO Company wants subscribers in their Onboarding Journey to move along a unique path if they purchase within the first 10 days of registration. An hourly automation is run which updates the Entry Source data extension with a field indicating if the subscriber made a purchase during this time. What should be confirmed to ensure Journey Builder directs the subscribers correctly?","o":[{"letter":"A","text":"Contact Data is used for the Decision Split"},{"letter":"B","text":"Entry Source attributes are available in Journey Settings"},{"letter":"C","text":"Journey Data is used for the Decision Split"}],"a":"A","e":"Attribute Groups"},{"s":"Part II: Subscriber Data Management - 18%","q":"When customers use the Marketing Cloud default Profile Center link to unsubscribe it causes users to not receive emails from any other business unit. What could explain this behavior?","o":[{"letter":"A","text":"The business unit unsubscribe setting causes an Enterprise level unsubscribe"},{"letter":"B","text":"The user gets added to a blocklist that causes an Enterprise level unsubscribe"},{"letter":"C","text":"The user gets added to an Exclusion Script."}],"a":"B","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"A Contact Delete request has been processed for subscribers who have been sent to previously in a NTO Company's account. The action did NOT target all contacts in their account and a significant number of contacts which have been sent to remain. Which tracking data would still exist in the account?","o":[{"letter":"A","text":"General tracking data at the job level"},{"letter":"B","text":"Trackiing extract contains subscriber-level data"},{"letter":"C","text":"Contact-specific data within the Tracking tab"}],"a":"A","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"A Marketing Cloud admin is using the Import Wizard to import data into a non-sendable data extension, but receives an error indicating the import type being used requires a primary key. Which import type could the admin use instead?","o":[{"letter":"A","text":"Overwrite"},{"letter":"B","text":"Add Only"},{"letter":"C","text":"Add and Update"}],"a":"A","e":"Data Extensions"},{"s":"Part II: Subscriber Data Management - 18%","q":"NTO Company wants a data model in Marketing Cloud which will prevent them from duplicating, or even triplicating, records. How should the unique identifier of the data model be setup if the MobilePush and Email channels are used within the same account?","o":[{"letter":"A","text":"Use the auto-generated keys supplied by Marketing Cloud at time of record creation for each channel used."},{"letter":"B","text":"Use a third-party system to identify and delete duplicate Contact Keys."},{"letter":"C","text":"Strategically control the Contact Key values and tie records togeher across channels using this key."}],"a":"C","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"To prevent retention of stagnant data, NTO Company wants any inactive data stored in data extensions to be cleared after 12 months. What action should be taken?","o":[{"letter":"A","text":"Set inactive data to be automatically cleared after one year, but is recoverable"},{"letter":"B","text":"Confgure the business unit data retention setting to 12 months"},{"letter":"C","text":"Apply a ROW Based Retention to each data extension as it is created, set to 12 months"}],"a":"C","e":"Data Retention"},{"s":"Part II: Subscriber Data Management - 18%","q":"NTO is preparing to send a promotional email. The audience file was loaded into a data extension but it does not display for Marketing Cloud admin scheduling the send. What should the admin confirm to resolve the issue?","o":[{"letter":"A","text":"The data extension is linked using the Contact Key"},{"letter":"B","text":"The data extension is marked as Sendable"},{"letter":"C","text":"The Data extension is marked as Sendable and Testable"}],"a":"B","e":""},{"s":"Part II: Subscriber Data Management - 18%","q":"Which data structure could be configured to appear in the out-of-the-box Subscription Center?","o":[{"letter":"A","text":"Data Extensions"},{"letter":"B","text":"Publication Lists"},{"letter":"C","text":"Groups"}],"a":"A","e":""},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO Company hired a new Marketing Cloud admin, who was told all emails come from info@email.nto.com. The previous admin did not leave any documentation. What should confirm a Sender Authentication Package (SAP) has been set up on the account?","o":[{"letter":"A","text":"Upon reciving an email, all tracked links start with click.email.nto.com"},{"letter":"B","text":"Users receive Marketing Cloud password reset emails from help@email.nto.com"},{"letter":"C","text":"The login page for Marketing Cloud Users is login.email.nto.com and is branded with NTO Company colors"}],"a":"A","e":"Marketing Cloud Connect"},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO company installed Query Studio for Marketing Cloud, however, users are reporting they do NOT have access. How should the Marketing Cloud admin ensure users have access?","o":[{"letter":"A","text":"Allow access package access on appropriate Roles"},{"letter":"B","text":"Configure the API Integration to allow all users access"},{"letter":"C","text":"License all appropriate users within the installed package"}],"a":"C","e":""},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO Company uses Sender Authentication Package (SAP) for branding purposes. Their German business unit is configured with the SAP domain de.ntomarketing.com. The German NTO Company team is preparing for a campaign and wants to use customized CloudPages with the domain de-special.ntomarketing.com. How could the Marketing Cloud admin meet this requirement?","o":[{"letter":"A","text":"Purchase a new SAP for de-special.ntomarketing.com"},{"letter":"B","text":"CloudPages must use the SAP domain"},{"letter":"C","text":"Purchase a new Private Domain for use in CloudPages"}],"a":"A","e":"Governance and Compliance"},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"A Marketing Cloud admin needs to warm their account's Dedicated IP. What option for segmentation aligns with the IP Warming process?","o":[{"letter":"A","text":"Segment by domain to limit number of sends to each email provider"},{"letter":"B","text":"Segment subscribers by subscriber opt-in date."},{"letter":"C","text":"Segment subscribers with soft bounces in their own dedicated send"}],"a":"A","e":"Governance and Compliance"},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO does NOT wants to store email address or phone numbers within Marketing Cloud. Which feature should they use?","o":[{"letter":"A","text":"Field Level Encryption"},{"letter":"B","text":"Lookup refernce to Contact Object"},{"letter":"C","text":"Tokenized Sending"}],"a":"C","e":"Security best practices for data, permissions, and PII."},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"A marketing Cloud admin wants to ensure sensitive information needed for email sends is NOT imported and stored in Marketing cloud. What solution should they implement?","o":[{"letter":"A","text":"Data At Rest Encryption"},{"letter":"B","text":"Field level Encrypon"},{"letter":"C","text":"Tokenized Sending"}],"a":"C","e":"Security best practices for data, permissions, and PII."},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"What elements of CAN-SPAM should the Marketing Cloud admin ensure are present for each Commercial send?","o":[{"letter":"A","text":"Preference Center link and physical mailing address"},{"letter":"B","text":"Preference Center link and a link to the business website"},{"letter":"C","text":"Business name and physical mailing address"}],"a":"A","e":""},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO Company wants to send a custom survey to customers asking about their experience following a recent purchase. Which feature should be used to create a survey form?","o":[{"letter":"A","text":"Smart Capture"},{"letter":"B","text":"Interaction Studio"},{"letter":"C","text":"Analytics Builder"}],"a":"A","e":""},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO Company purchased one Sender Authentication Package (SAP) to ensure their branding is on every marketing communication. What would be achieved with SAP?","o":[{"letter":"A","text":"A Dedicated IP is automatically warmed up"},{"letter":"B","text":"The out-of-the-box profile center will display NTO Company branding"},{"letter":"C","text":"Image URLS are wrapped with the appropriate brand URL"}],"a":"C","e":"Governance and Compliance"},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO Company has a mobile app. Which product would allow them to send push notifications to customers with their mobile app?","o":[{"letter":"A","text":"Journey Builder"},{"letter":"B","text":"Group Connect"},{"letter":"C","text":"Contact Builder"}],"a":"A","e":""},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO Company is warming a new Dedicated IP address, and they need to monitor deliverability across major ISPs. Which bounce type would be indicative of the ISP's view of their sending reputation?","o":[{"letter":"A","text":"Block"},{"letter":"B","text":"Soft"},{"letter":"C","text":"Technical"}],"a":"A","e":"Governance and Compliance"},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO has expanded its marketing efforts globally and wants to implement a dedicated Sender Authentication Package. They plan to share it across each of their Marketing Cloud accounts. Which consideration would help NTO determine if a Dedicated IP is the right choice?","o":[{"letter":"A","text":"Length of time needed to pause sending is greater than one month"},{"letter":"B","text":"Send volume is large enough to maintain a positive or neutral reputation"},{"letter":"C","text":"Pre-warmed IP address can be purchased from Salesforce"}],"a":"B","e":""},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO has been noticing reduced deliverability when they do large sends. Which part of deliverability is tied to hitting Spam Traps during a send?","o":[{"letter":"A","text":"Sender Authentication"},{"letter":"B","text":"Content"},{"letter":"C","text":"List Hygiene"}],"a":"A","e":"Email Studio"},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"NTO is migrating from a small, in-house email solution to Marketing Cloud. What should the Marketing Cloud admin consider when sending from the new IP Address?","o":[{"letter":"A","text":"Sending ISPs notification of the new IP Address."},{"letter":"B","text":"The IP address is on reserve, is already in use, and has an email sending history."},{"letter":"C","text":"Building desirable sending history and data will be variable based on list size and engagement."}],"a":"A","e":""},{"s":"Part I: Digital Marketing Proficiency - 13%","q":"A Marketing Cloud admin at a bank is asked to avoid storing sensitive data in the cloud. This data will only be sent to Marketing Cloud to execute a send. Which feature would the admin use to meet this requirement?","o":[{"letter":"A","text":"Distributed Marketing Sends"},{"letter":"B","text":"Tokenized Sending"},{"letter":"C","text":"Field Level Encryption"}],"a":"B","e":"Security best practices for data, permissions, and PII."}];
+
+// ── STATE ──
+let mode = null;
+let sessionQuestions = [];
+let currentIdx = 0;
+let practiceScore = { correct: 0, answered: 0 };
+let practiceStatus = [];  // 'unanswered' | 'correct' | 'incorrect' | 'skipped'
+let practiceAnswers = {}; // idx -> selected letter
+let practiceFlagged = new Set();
+let testAnswers = {};     // idx -> letter
+let testFlagged = new Set();
+let testTimer = null;
+let testSecondsLeft = 105 * 60;
+let selectedSections = new Set(); // empty = all sections
+let sessionResults = null;
+
+// ── SECTIONS ──
+const SECTION_COLORS = {
+  'Section 1': '#a78bfa',
+  'Section 2': '#34d399',
+  'Section 3': '#60a5fa',
+  'Section 4': '#f97316',
+  'Section 5': '#f472b6',
+  'Section 6': '#facc15',
+};
+function sectionColor(s) {
+  for (const key of Object.keys(SECTION_COLORS)) {
+    if (s.startsWith(key)) return SECTION_COLORS[key];
+  }
+  return '#8890b0';
+}
+function shortSection(s) {
+  return s.replace(/^Section \d+: /, '').replace('Data Modeling, Identity Resolution & Segmentation', 'Data Modeling & Segmentation').replace('Campaign Design, Flow Orchestration & Content', 'Campaign Design & Content');
+}
+
+// ── INIT ──
+(function init() {
+  const sections = [...new Set(ALL_QUESTIONS.map(q => q.s))].sort();
+  const container = document.getElementById('section-pills');
+  sections.forEach(s => {
+    const pill = document.createElement('button');
+    pill.className = 'pill';
+    pill.dataset.section = s;
+    pill.textContent = s.replace(/^Section \d+: /, 'S' + s.match(/\d+/)[0] + ': ');
+    pill.onclick = () => selectSection(s);
+    container.appendChild(pill);
+  });
+  updateBestScore();
+})();
+
+function updateBestScore() {
+  const best = localStorage.getItem('mcea_best_score');
+  if (best) document.getElementById('best-score-stat').textContent = best + '%';
+}
+
+function selectSection(s) {
+  if (s === 'all') {
+    selectedSections.clear();
+  } else {
+    if (selectedSections.has(s)) {
+      selectedSections.delete(s);
+    } else {
+      selectedSections.add(s);
+    }
+  }
+  // sync pill active states
+  document.querySelectorAll('.pill').forEach(p => {
+    const sec = p.dataset.section;
+    if (sec === 'all') {
+      p.classList.toggle('active', selectedSections.size === 0);
+    } else {
+      p.classList.toggle('active', selectedSections.has(sec));
+    }
+  });
+}
+
+function getFilteredQuestions() {
+  if (selectedSections.size === 0) return [...ALL_QUESTIONS];
+  return ALL_QUESTIONS.filter(q => selectedSections.has(q.s));
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── SCREENS ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  if (testTimer) { clearInterval(testTimer); testTimer = null; }
+  showScreen('home');
+  updateBestScore();
+}
+
+function confirmAbandon() {
+  if (confirm('Abandon this exam? Your progress will be lost.')) {
+    goHome();
+  }
+}
+
+// ── PRACTICE MODE ──
+function startMode(m) {
+  mode = m;
+  const pool = getFilteredQuestions();
+  if (pool.length === 0) { alert('No questions match the selected filter.'); return; }
+
+  if (m === 'practice') {
+    sessionQuestions = shuffle(pool);
+    currentIdx = 0;
+    practiceScore = { correct: 0, answered: 0 };
+    practiceStatus = sessionQuestions.map(() => 'unanswered');
+    practiceAnswers = {};
+    practiceFlagged = new Set();
+    showScreen('quiz');
+    buildSidebar();
+    renderPracticeQuestion();
+  } else {
+    const count = Math.min(60, pool.length);
+    sessionQuestions = shuffle(pool).slice(0, count);
+    currentIdx = 0;
+    testAnswers = {};
+    testFlagged = new Set();
+    testSecondsLeft = 105 * 60;
+    showScreen('test-screen');
+    document.getElementById('tq-total').textContent = count;
+    buildTestSidebar();
+    renderTestQuestion();
+    startTimer();
+  }
+}
+
+// ── SIDEBAR ──
+function buildSidebar() {
+  const grid = document.getElementById('sidebar-grid');
+  grid.innerHTML = '';
+  sessionQuestions.forEach((_, i) => {
+    const tile = document.createElement('button');
+    tile.className = 'q-tile';
+    tile.id = `tile-${i}`;
+    tile.textContent = i + 1;
+    tile.title = `Question ${i + 1}`;
+    tile.onclick = () => jumpToQuestion(i);
+    grid.appendChild(tile);
+  });
+  updateSidebar();
+}
+
+function updateSidebar() {
+  const total = sessionQuestions.length;
+  const answered = practiceStatus.filter(s => s === 'correct' || s === 'incorrect').length;
+  document.getElementById('sidebar-answered-count').textContent = `${answered} / ${total} answered`;
+
+  practiceStatus.forEach((status, i) => {
+    const tile = document.getElementById(`tile-${i}`);
+    if (!tile) return;
+    tile.className = 'q-tile';
+    // Status class (mutually exclusive, highest priority first)
+    if (i === currentIdx) tile.classList.add('current');
+    else if (status === 'correct') tile.classList.add('answered-correct');
+    else if (status === 'incorrect') tile.classList.add('answered-incorrect');
+    else if (status === 'skipped') tile.classList.add('skipped');
+    // Flagged is additive — applies on top of any status
+    if (practiceFlagged.has(i) && i !== currentIdx) tile.classList.add('flagged');
+    tile.title = `Q${i + 1}${practiceFlagged.has(i) ? ' (Flagged)' : ''}`;
+  });
+
+  // Scroll current tile into view within sidebar
+  const currentTile = document.getElementById(`tile-${currentIdx}`);
+  if (currentTile) currentTile.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function jumpToQuestion(idx) {
+  // Only allow jumping to unanswered/skipped questions (not already-answered ones)
+  currentIdx = idx;
+  renderPracticeQuestion();
+}
+
+function flagPracticeQuestion() {
+  if (practiceFlagged.has(currentIdx)) {
+    practiceFlagged.delete(currentIdx);
+  } else {
+    practiceFlagged.add(currentIdx);
+  }
+  const flagBtn = document.getElementById('practice-flag-btn');
+  if (practiceFlagged.has(currentIdx)) {
+    flagBtn.textContent = '🚩 Flagged';
+    flagBtn.style.color = '#D4860B';
+    flagBtn.style.borderColor = '#D4860B';
+  } else {
+    flagBtn.textContent = '🚩 Flag';
+    flagBtn.style.color = '';
+    flagBtn.style.borderColor = '';
+  }
+  updateSidebar();
+}
+
+// ── PRACTICE ──
+function renderPracticeQuestion() {
+  const q = sessionQuestions[currentIdx];
+  const total = sessionQuestions.length;
+
+  document.getElementById('q-current').textContent = currentIdx + 1;
+  document.getElementById('q-total').textContent = total;
+  document.getElementById('q-num-label').textContent = `Q${currentIdx + 1} of ${total}`;
+  document.getElementById('q-section-tag').textContent = shortSection(q.s);
+  document.getElementById('q-section-tag').style.background = sectionColor(q.s) + '22';
+  document.getElementById('q-section-tag').style.color = sectionColor(q.s);
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-bar').style.width = `${((currentIdx) / total) * 100}%`;
+
+  const { correct, answered } = practiceScore;
+  document.getElementById('practice-score').textContent = `${correct} / ${answered}`;
+
+  // options
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.o.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.dataset.letter = opt.letter;
+    btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span class="opt-text">${opt.text}</span>`;
+    btn.onclick = () => selectPracticeAnswer(opt.letter);
+    list.appendChild(btn);
+  });
+
+  // reset feedback
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box';
+  document.getElementById('skip-btn').disabled = false;
+
+  // hide Skip + Next on last question
+  const isLast = currentIdx === total - 1;
+  document.getElementById('skip-btn').style.display = isLast ? 'none' : '';
+  document.getElementById('next-btn').style.display = isLast ? 'none' : '';
+
+  // update flag button appearance
+  const flagBtn = document.getElementById('practice-flag-btn');
+  if (practiceFlagged.has(currentIdx)) {
+    flagBtn.textContent = '🚩 Flagged';
+    flagBtn.style.color = '#D4860B';
+    flagBtn.style.borderColor = '#D4860B';
+  } else {
+    flagBtn.textContent = '🚩 Flag';
+    flagBtn.style.color = '';
+    flagBtn.style.borderColor = '';
+  }
+
+  updateSidebar();
+}
+
+function selectPracticeAnswer(letter) {
+  const q = sessionQuestions[currentIdx];
+  const correct = q.a;
+  const isCorrect = letter === correct;
+
+  // Disable all options
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.classList.add('revealed');
+    const l = btn.dataset.letter;
+    if (l === correct) btn.classList.add('correct');
+    else if (l === letter && !isCorrect) btn.classList.add('incorrect');
+  });
+
+  practiceAnswers[currentIdx] = letter;
+  practiceScore.answered++;
+  if (isCorrect) practiceScore.correct++;
+  practiceStatus[currentIdx] = isCorrect ? 'correct' : 'incorrect';
+  updateSidebar();
+
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box show ' + (isCorrect ? 'correct-fb' : 'incorrect-fb');
+  document.getElementById('feedback-result').className = 'feedback-result ' + (isCorrect ? 'correct-fb' : 'incorrect-fb');
+  document.getElementById('feedback-result').textContent = isCorrect ? '✓ Correct' : '✗ Incorrect — correct answer: ' + correct;
+  document.getElementById('feedback-exp').textContent = q.e || 'No explanation available.';
+
+  document.getElementById('next-btn').disabled = false;
+  document.getElementById('skip-btn').disabled = true;
+  document.getElementById('practice-score').textContent = `${practiceScore.correct} / ${practiceScore.answered}`;
+}
+
+function nextQuestion() {
+  if (practiceStatus[currentIdx] === 'unanswered') {
+    practiceStatus[currentIdx] = 'skipped';
+  }
+  currentIdx++;
+  if (currentIdx >= sessionQuestions.length) {
+    showPracticeResults();
+  } else {
+    renderPracticeQuestion();
+  }
+}
+
+function skipQuestion() {
+  if (practiceStatus[currentIdx] === 'unanswered') {
+    practiceStatus[currentIdx] = 'skipped';
+  }
+  currentIdx++;
+  if (currentIdx >= sessionQuestions.length) {
+    showPracticeResults();
+  } else {
+    renderPracticeQuestion();
+  }
+}
+
+function showPracticeResults() {
+  const skipped = practiceStatus.filter(s => s === 'skipped' || s === 'unanswered').length;
+  const results = buildResults(sessionQuestions, practiceAnswers, 'practice', skipped);
+  sessionResults = results;
+  renderResults(results, 'practice');
+  showScreen('results');
+}
+
+// ── TEST MODE ──
+function renderTestQuestion() {
+  const q = sessionQuestions[currentIdx];
+  const total = sessionQuestions.length;
+
+  document.getElementById('tq-current').textContent = currentIdx + 1;
+  document.getElementById('tq-num-label').textContent = `Q${currentIdx + 1} of ${total}`;
+  document.getElementById('tq-section-tag').textContent = shortSection(q.s);
+  document.getElementById('tq-section-tag').style.background = sectionColor(q.s) + '22';
+  document.getElementById('tq-section-tag').style.color = sectionColor(q.s);
+  document.getElementById('tq-text').textContent = q.q;
+  document.getElementById('test-progress-bar').style.width = `${(currentIdx / total) * 100}%`;
+
+  const list = document.getElementById('t-options-list');
+  list.innerHTML = '';
+  q.o.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (testAnswers[currentIdx] === opt.letter ? ' selected' : '');
+    btn.dataset.letter = opt.letter;
+    btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span class="opt-text">${opt.text}</span>`;
+    btn.onclick = () => selectTestAnswer(opt.letter);
+    list.appendChild(btn);
+  });
+
+  // flag button
+  document.getElementById('test-flag-btn').textContent = testFlagged.has(currentIdx) ? '🚩 Flagged' : '🚩 Flag';
+
+  // hide Next on last question
+  const isLast = currentIdx === total - 1;
+  document.getElementById('test-next-btn').style.display = isLast ? 'none' : '';
+
+  updateTestSidebar();
+}
+
+function selectTestAnswer(letter) {
+  testAnswers[currentIdx] = letter;
+  document.querySelectorAll('#t-options-list .option-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.letter === letter);
+  });
+  updateTestSidebar();
+}
+
+function flagQuestion() {
+  if (testFlagged.has(currentIdx)) testFlagged.delete(currentIdx);
+  else testFlagged.add(currentIdx);
+  document.getElementById('test-flag-btn').textContent = testFlagged.has(currentIdx) ? '🚩 Flagged' : '🚩 Flag';
+  updateTestSidebar();
+}
+
+// ── TEST SIDEBAR ──
+function buildTestSidebar() {
+  const grid = document.getElementById('test-sidebar-grid');
+  grid.innerHTML = '';
+  sessionQuestions.forEach((_, i) => {
+    const tile = document.createElement('button');
+    tile.className = 'q-tile';
+    tile.id = `test-tile-${i}`;
+    tile.textContent = i + 1;
+    tile.title = `Question ${i + 1}`;
+    tile.onclick = () => { currentIdx = i; renderTestQuestion(); };
+    grid.appendChild(tile);
+  });
+  updateTestSidebar();
+}
+
+function updateTestSidebar() {
+  const total = sessionQuestions.length;
+  const answered = Object.keys(testAnswers).length;
+  document.getElementById('test-sidebar-answered-count').textContent = `${answered} / ${total} answered`;
+
+  sessionQuestions.forEach((_, i) => {
+    const tile = document.getElementById(`test-tile-${i}`);
+    if (!tile) return;
+    tile.className = 'q-tile';
+    if (i === currentIdx) {
+      tile.classList.add('current');
+    } else if (testAnswers[i] !== undefined) {
+      tile.classList.add('test-answered');
+    }
+    // flagged is additive
+    if (testFlagged.has(i) && i !== currentIdx) tile.classList.add('flagged');
+    tile.title = `Q${i + 1}${testFlagged.has(i) ? ' (Flagged)' : ''}`;
+  });
+
+  const currentTile = document.getElementById(`test-tile-${currentIdx}`);
+  if (currentTile) currentTile.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function testNav(dir) {
+  const next = currentIdx + dir;
+  if (next < 0 || next >= sessionQuestions.length) return;
+  currentIdx = next;
+  renderTestQuestion();
+}
+
+function submitTest() {
+  if (clearInterval) clearInterval(testTimer);
+  testTimer = null;
+  const answered = Object.keys(testAnswers).length;
+  const unanswered = sessionQuestions.length - answered;
+  if (unanswered > 0) {
+    if (!confirm(`You have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''}. Submit anyway?`)) return;
+  }
+  const results = buildResults(sessionQuestions, testAnswers, 'test');
+  sessionResults = results;
+
+  const pct = Math.round((results.correct / results.total) * 100);
+  const prev = parseInt(localStorage.getItem('mcea_best_score') || '0');
+  if (pct > prev) localStorage.setItem('mcea_best_score', pct);
+
+  renderResults(results, 'test');
+  showScreen('results');
+}
+
+// ── TIMER ──
+function startTimer() {
+  updateTimerDisplay();
+  testTimer = setInterval(() => {
+    testSecondsLeft--;
+    updateTimerDisplay();
+    if (testSecondsLeft <= 0) {
+      clearInterval(testTimer);
+      alert('Time is up! Submitting your exam.');
+      submitTest();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const h = Math.floor(testSecondsLeft / 3600);
+  const m = Math.floor((testSecondsLeft % 3600) / 60);
+  const s = testSecondsLeft % 60;
+  const label = h > 0 ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`;
+  const el = document.getElementById('timer-display');
+  el.textContent = label;
+  el.className = 'timer-badge' + (testSecondsLeft < 300 ? ' danger' : testSecondsLeft < 900 ? ' warning' : '');
+}
+
+// ── RESULTS ──
+function buildResults(questions, answers, m, skipped) {
+  let correct = 0;
+  let sectionMap = {};
+  questions.forEach((q, i) => {
+    const sec = q.s;
+    if (!sectionMap[sec]) sectionMap[sec] = { correct: 0, total: 0, answered: 0 };
+    sectionMap[sec].total++;
+    const given = answers[i];
+    if (given !== undefined) {
+      sectionMap[sec].answered++;
+      const isCorrect = given === q.a;
+      if (isCorrect) { correct++; sectionMap[sec].correct++; }
+    }
+  });
+  const actualAnswered = Object.keys(answers).filter(k => answers[k] !== undefined).length;
+  const skippedCount = skipped !== undefined ? skipped : (questions.length - actualAnswered);
+  const answered = actualAnswered;
+  return {
+    mode: m,
+    questions,
+    answers,
+    correct,
+    total: questions.length,
+    answered,
+    skipped: skippedCount,
+    sectionMap
+  };
+}
+
+function renderResults(res, m) {
+  // For practice, score is correct out of answered (skipped don't count against you)
+  // For test, score is correct out of total
+  const denominator = (m === 'practice') ? res.answered : res.total;
+  const pct = denominator > 0 ? Math.round((res.correct / denominator) * 100) : 0;
+  const pass = pct >= 67;
+
+  // Ring animation
+  const circumference = 377;
+  const offset = circumference - (pct / 100) * circumference;
+  const ring = document.getElementById('ring-fill');
+  ring.style.stroke = pass ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--red)';
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 50);
+
+  document.getElementById('ring-pct').textContent = pct + '%';
+  document.getElementById('ring-sub').textContent = m === 'practice' ? 'practice' : 'exam score';
+  document.getElementById('result-title').textContent = m === 'practice' ? 'Practice Complete' : (pass ? 'Exam Passed!' : 'Exam Complete');
+
+  const skippedNote = (m === 'practice' && res.skipped > 0) ? ` (${res.skipped} skipped)` : '';
+  document.getElementById('result-sub').textContent = m === 'practice'
+    ? `You answered ${res.correct} out of ${res.answered} questions correctly${skippedNote}.`
+    : (pass ? `You scored ${pct}% — above the passing threshold of 67%.` : `You scored ${pct}%. The passing score is 67%. Keep studying!`);
+
+  document.getElementById('r-correct').textContent = res.correct;
+  document.getElementById('r-incorrect').textContent = res.answered - res.correct;
+  document.getElementById('r-total').textContent = res.answered;
+
+  // Section breakdown
+  const bd = document.getElementById('section-breakdown');
+  bd.innerHTML = '<div class="breakdown-header">Performance by Section</div>';
+  Object.entries(res.sectionMap).sort((a,b) => a[0].localeCompare(b[0])).forEach(([sec, data]) => {
+    const pct2 = Math.round((data.correct / data.total) * 100);
+    const color = sectionColor(sec);
+    const row = document.createElement('div');
+    row.className = 'breakdown-row';
+    row.innerHTML = `
+      <div class="breakdown-name">${shortSection(sec)}</div>
+      <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${pct2}%;background:${color}"></div></div>
+      <div class="breakdown-frac" style="color:${color}">${data.correct}/${data.total}</div>
+    `;
+    bd.appendChild(row);
+  });
+}
+
+// ── REVIEW ──
+function reviewAnswers() {
+  if (!sessionResults) return;
+  const body = document.getElementById('review-body');
+  body.innerHTML = '';
+  sessionResults.questions.forEach((q, i) => {
+    const given = sessionResults.answers[i];
+    const isSkipped = given === undefined;
+    const isCorrect = !isSkipped && given === q.a;
+    const statusClass = isCorrect ? 'correct-card' : isSkipped ? 'skipped-card' : 'incorrect-card';
+    const card = document.createElement('div');
+    card.className = 'review-card ' + statusClass;
+
+    const headerRow = document.createElement('div');
+    headerRow.className = 'review-header-row';
+    const badgeClass = isCorrect ? 'correct-badge' : isSkipped ? 'skipped-badge' : 'incorrect-badge';
+    const badgeText = isCorrect ? 'Correct' : isSkipped ? 'Skipped' : 'Incorrect';
+    headerRow.innerHTML = `
+      <span class="q-num">Q${i+1}</span>
+      <span class="review-badge ${badgeClass}">${badgeText}</span>
+      <span class="section-tag" style="background:${sectionColor(q.s)}22;color:${sectionColor(q.s)}">${shortSection(q.s)}</span>
+    `;
+    card.appendChild(headerRow);
+
+    const qText = document.createElement('div');
+    qText.className = 'review-question';
+    qText.textContent = q.q;
+    card.appendChild(qText);
+
+    q.o.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = 'review-opt';
+      const isAnswer = opt.letter === q.a;
+      const isChosen = opt.letter === given;
+      if (isAnswer) div.classList.add('correct-ans');
+      else if (isChosen && !isAnswer) div.classList.add('chosen');
+      else div.classList.add('plain');
+      div.textContent = opt.letter + '. ' + opt.text;
+      if (isAnswer) div.textContent += ' ✓';
+      if (isChosen && !isAnswer) div.textContent += ' (your answer)';
+      card.appendChild(div);
+    });
+
+    if (q.e) {
+      const exp = document.createElement('div');
+      exp.className = 'review-exp';
+      exp.textContent = q.e;
+      card.appendChild(exp);
+    }
+
+    body.appendChild(card);
+  });
+
+  showScreen('review');
+}
+</script>
+</div><!-- /app-root -->
+</body>
+</html>
